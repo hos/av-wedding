@@ -2,6 +2,7 @@ import type { Bot } from "grammy";
 import { InlineKeyboard } from "grammy";
 import { t } from "../i18n";
 import { paymentOptions } from "../config";
+import { buildWelcomeKeyboard } from "./commands";
 
 export function registerCallbackHandlers(bot: Bot) {
   // Show payment options list
@@ -45,13 +46,9 @@ export function registerCallbackHandlers(bot: Bot) {
   // Back to welcome
   bot.callbackQuery("back_to_welcome", async (ctx) => {
     const lang = ctx.from?.language_code;
-    const keyboard = new InlineKeyboard().text(
-      t("btn_payment_options", lang),
-      "show_payment_options",
-    );
 
     await ctx.editMessageText(t("welcome", lang), {
-      reply_markup: keyboard,
+      reply_markup: buildWelcomeKeyboard(lang),
     });
     await ctx.answerCallbackQuery();
   });
