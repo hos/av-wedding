@@ -1,0 +1,21 @@
+{
+  "name": "av-wedding",
+  "module": "src/index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "bun run --watch src/index.ts",
+    "start": "bun run src/index.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "firebase-admin": "^13.6.1",
+    "grammy": "^1.40.0",
+    "i18next": "^25.8.13"
+  }
+}
