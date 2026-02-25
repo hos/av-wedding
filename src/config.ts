@@ -11,20 +11,26 @@ export const paymentOptions = [
   {
     id: "bank",
     values: {
-      bank_name: "PLACEHOLDER_BANK_NAME",
-      recipient_name: "PLACEHOLDER_RECIPIENT_NAME",
-      iban: "GE00TB0000000000000000",
-      swift: "TBCBGE22",
-      account_number: "PLACEHOLDER_ACCOUNT_NUMBER",
+      intermediary_bank_name: "CITIBANK NA, NEW YORK",
+      intermediary_bank_swift: "CITIUS33XXX",
+      beneficiary_bank_name: "Ameriabank CJSC",
+      beneficiary_bank_swift: "ARMIAM22",
+      account_number: "1570077430300101",
+      recipient_name: "MARIA VASILKOVA",
+      payment_details: "Personal transfer - wedding",
     },
   },
   {
     id: "visa",
     values: {
-      visa_card_number: "4000 0000 0000 0000",
-      cardholder_name: "PLACEHOLDER CARDHOLDER NAME",
-      revolut_username: "PLACEHOLDER_REVOLUT_USERNAME",
+      visa_card_number: "4083 0600 3101 8175",
+      cardholder_name: "MARIA VASILKOVA",
+      //revolut_username: "PLACEHOLDER_REVOLUT_USERNAME",
     },
+  },
+  {
+    id: "revolut",
+    values: {},
   },
   {
     id: "telegram_wallet",
