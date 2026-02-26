@@ -29,11 +29,11 @@ export const paymentOptions = [
     },
   },
   {
-    id: "telegram_wallet",
+    id: "revolut",
     values: {},
   },
   {
-    id: "revolut",
+    id: "telegram_wallet",
     values: {},
   },
   {
