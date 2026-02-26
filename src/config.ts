@@ -23,7 +23,6 @@ export const paymentOptions = [
   {
     id: "visa",
     values: {
-    values: {
       visa_card_number: "4083 0600 3101 8175",
       cardholder_name: "MARIA VASILKOVA",
       //revolut_username: "PLACEHOLDER_REVOLUT_USERNAME",
