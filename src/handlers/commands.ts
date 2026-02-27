@@ -1,26 +1,24 @@
 import type { Bot } from "grammy";
 import { InlineKeyboard } from "grammy";
-import { t } from "../i18n";
+import type { I18nContext } from "../i18n";
 import { clearAlbumMode } from "./album";
 
-export function buildWelcomeKeyboard(lang?: string) {
+export function buildWelcomeKeyboard(t: I18nContext["t"]) {
   return new InlineKeyboard()
-    .text(t("btn_payment_options", lang), "show_payment_options")
+    .text(t("btn_payment_options"), "show_payment_options")
     .row()
-    .text(t("btn_album", lang), "show_album");
+    .text(t("btn_album"), "show_album");
 }
 
-export function registerCommands(bot: Bot) {
+export function registerCommands(bot: Bot<I18nContext>) {
   bot.command("start", (ctx) => {
-    const lang = ctx.from?.language_code;
     if (ctx.from) clearAlbumMode(ctx.from.id);
-    return ctx.reply(t("welcome", lang), {
-      reply_markup: buildWelcomeKeyboard(lang),
+    return ctx.reply(ctx.t("welcome"), {
+      reply_markup: buildWelcomeKeyboard(ctx.t),
     });
   });
 
   bot.command("help", (ctx) => {
-    const lang = ctx.from?.language_code;
-    return ctx.reply(t("help", lang));
+    return ctx.reply(ctx.t("help"));
   });
 }

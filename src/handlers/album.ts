@@ -1,7 +1,7 @@
 import type { Bot } from "grammy";
 import { InlineKeyboard } from "grammy";
 import { db, storage } from "../firebase";
-import { t } from "../i18n";
+import { t, type I18nContext } from "../i18n";
 import { adminIds } from "../config";
 
 /** Track users who are in "album upload" mode */
@@ -15,18 +15,17 @@ export function clearAlbumMode(userId: number): void {
   albumMode.delete(userId);
 }
 
-export function registerAlbumHandlers(bot: Bot) {
+export function registerAlbumHandlers(bot: Bot<I18nContext>) {
   // Show album intro
   bot.callbackQuery("show_album", async (ctx) => {
-    const lang = ctx.from?.language_code;
     const keyboard = new InlineKeyboard()
-      .text(t("btn_album_guidelines", lang), "show_album_guidelines")
+      .text(ctx.t("btn_album_guidelines"), "show_album_guidelines")
       .row()
-      .text(t("btn_send_album_file", lang), "album_start_upload")
+      .text(ctx.t("btn_send_album_file"), "album_start_upload")
       .row()
-      .text(t("btn_back", lang), "back_to_welcome");
+      .text(ctx.t("btn_back"), "back_to_welcome");
 
-    await ctx.editMessageText(t("album_intro", lang), {
+    await ctx.editMessageText(ctx.t("album_intro"), {
       reply_markup: keyboard,
       parse_mode: "Markdown",
     });
@@ -35,13 +34,12 @@ export function registerAlbumHandlers(bot: Bot) {
 
   // Show guidelines
   bot.callbackQuery("show_album_guidelines", async (ctx) => {
-    const lang = ctx.from?.language_code;
     const keyboard = new InlineKeyboard()
-      .text(t("btn_send_album_file", lang), "album_start_upload")
+      .text(ctx.t("btn_send_album_file"), "album_start_upload")
       .row()
-      .text(t("btn_back", lang), "show_album");
+      .text(ctx.t("btn_back"), "show_album");
 
-    await ctx.editMessageText(t("album_guidelines", lang), {
+    await ctx.editMessageText(ctx.t("album_guidelines"), {
       reply_markup: keyboard,
       parse_mode: "Markdown",
     });
@@ -50,10 +48,9 @@ export function registerAlbumHandlers(bot: Bot) {
 
   // Enter album upload mode
   bot.callbackQuery("album_start_upload", async (ctx) => {
-    const lang = ctx.from?.language_code;
     albumMode.add(ctx.from.id);
 
-    await ctx.editMessageText(t("album_awaiting_file", lang));
+    await ctx.editMessageText(ctx.t("album_awaiting_file"));
     await ctx.answerCallbackQuery();
   });
 
@@ -62,7 +59,6 @@ export function registerAlbumHandlers(bot: Bot) {
     if (!isInAlbumMode(ctx.from.id)) return;
 
     const user = ctx.from;
-    const lang = user.language_code;
     const userId = user.id.toString();
 
     // Get the highest resolution photo
@@ -98,7 +94,7 @@ export function registerAlbumHandlers(bot: Bot) {
     // Notify admins
     await notifyAdmins(bot, user, "photo");
 
-    await ctx.reply(t("album_file_received", lang));
+    await ctx.reply(ctx.t("album_file_received"));
   });
 
   // Handle document uploads (PDF, images sent as files)
@@ -106,7 +102,6 @@ export function registerAlbumHandlers(bot: Bot) {
     if (!isInAlbumMode(ctx.from.id)) return;
 
     const user = ctx.from;
-    const lang = user.language_code;
     const userId = user.id.toString();
     const doc = ctx.message.document;
 
@@ -116,7 +111,7 @@ export function registerAlbumHandlers(bot: Bot) {
     const isPdf = mime === "application/pdf";
 
     if (!isImage && !isPdf) {
-      await ctx.reply(t("album_file_error", lang));
+      await ctx.reply(ctx.t("album_file_error"));
       return;
     }
 
@@ -153,7 +148,7 @@ export function registerAlbumHandlers(bot: Bot) {
     // Notify admins
     await notifyAdmins(bot, user, fileType);
 
-    await ctx.reply(t("album_file_received", lang));
+    await ctx.reply(ctx.t("album_file_received"));
   });
 }
 

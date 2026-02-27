@@ -1,15 +1,15 @@
 import type { Bot } from "grammy";
 import { InlineKeyboard } from "grammy";
 import { db, storage } from "../firebase";
-import { t } from "../i18n";
+import { t, type I18nContext } from "../i18n";
 import { isAdmin } from "../config";
 
 const PAGE_SIZE = 5;
 
 async function sendAdminList(
-  bot: Bot,
+  bot: Bot<I18nContext>,
   chatId: number | string,
-  lang: string | undefined,
+  t: I18nContext["t"],
   page: number,
   editMessageId?: number,
 ) {
@@ -23,7 +23,7 @@ async function sendAdminList(
 
   if (total === 0) {
     const keyboard = new InlineKeyboard().text("🔄 Refresh", "admin_page_0");
-    const text = t("admin_no_pending", lang);
+    const text = t("admin_no_pending");
     if (editMessageId) {
       await bot.api.editMessageText(chatId, editMessageId, text, {
         parse_mode: "Markdown",
@@ -44,11 +44,11 @@ async function sendAdminList(
   const pageDocs = docs.slice(start, start + PAGE_SIZE);
 
   // Build list text
-  let listText = t("admin_menu_header", lang, { count: String(total) }) + "\n\n";
+  let listText = t("admin_menu_header", { count: String(total) }) + "\n\n";
 
   for (let i = 0; i < pageDocs.length; i++) {
     const data = pageDocs[i]!.data();
-    const methodLabel = t(`payment_${data.payment_method}`, "en");
+    const methodLabel = t(`payment_${data.payment_method}`);
     const statusIcon = data.status === "confirmed" ? "✅" : "⏳";
     const date = new Date(data.created_at).toLocaleDateString("en-GB", {
       day: "2-digit",
@@ -56,7 +56,7 @@ async function sendAdminList(
       hour: "2-digit",
       minute: "2-digit",
     });
-    listText += t("admin_list_item", lang, {
+    listText += t("admin_list_item", {
       index: String(start + i + 1),
       username: data.username || "N/A",
       payment_method: methodLabel,
@@ -82,14 +82,14 @@ async function sendAdminList(
 
   // Pagination row: ⬅️ 🔄 ➡️
   if (currentPage > 0) {
-    keyboard.text(t("btn_prev_page", lang), `admin_page_${currentPage - 1}`);
+    keyboard.text(t("btn_prev_page"), `admin_page_${currentPage - 1}`);
   }
   keyboard.text("🔄", `admin_page_${currentPage}`);
   if (currentPage < totalPages - 1) {
-    keyboard.text(t("btn_next_page", lang), `admin_page_${currentPage + 1}`);
+    keyboard.text(t("btn_next_page"), `admin_page_${currentPage + 1}`);
   }
   keyboard.row();
-  keyboard.text(t("btn_back", lang), "admin_main");
+  keyboard.text(t("btn_back"), "admin_main");
 
   if (editMessageId) {
     await bot.api.editMessageText(chatId, editMessageId, listText, {
@@ -104,19 +104,18 @@ async function sendAdminList(
   }
 }
 
-export function registerAdminHandlers(bot: Bot) {
+export function registerAdminHandlers(bot: Bot<I18nContext>) {
   // /admin command — show main admin menu
   bot.command("admin", async (ctx) => {
     if (!ctx.from || !isAdmin(ctx.from.id)) {
-      return ctx.reply(t("admin_not_authorized", ctx.from?.language_code));
+      return ctx.reply(ctx.t("admin_not_authorized"));
     }
-    const lang = ctx.from.language_code;
     const keyboard = new InlineKeyboard()
-      .text(t("btn_admin_payments", lang), "admin_page_0")
+      .text(ctx.t("btn_admin_payments"), "admin_page_0")
       .row()
-      .text(t("btn_admin_album", lang), "admin_album_0");
+      .text(ctx.t("btn_admin_album"), "admin_album_0");
 
-    await ctx.reply(t("admin_main_menu", lang), {
+    await ctx.reply(ctx.t("admin_main_menu"), {
       parse_mode: "Markdown",
       reply_markup: keyboard,
     });
@@ -125,15 +124,14 @@ export function registerAdminHandlers(bot: Bot) {
   // Admin main menu callback
   bot.callbackQuery("admin_main", async (ctx) => {
     if (!isAdmin(ctx.from.id)) {
-      await ctx.answerCallbackQuery({ text: t("admin_not_authorized", "en") });
+      await ctx.answerCallbackQuery({ text: ctx.t("admin_not_authorized") });
       return;
     }
-    const lang = ctx.from.language_code;
     const chatId = ctx.chat!.id;
     const keyboard = new InlineKeyboard()
-      .text(t("btn_admin_payments", lang), "admin_page_0")
+      .text(ctx.t("btn_admin_payments"), "admin_page_0")
       .row()
-      .text(t("btn_admin_album", lang), "admin_album_0");
+      .text(ctx.t("btn_admin_album"), "admin_album_0");
 
     // Delete old message (could be a photo) and send fresh text
     try {
@@ -141,7 +139,7 @@ export function registerAdminHandlers(bot: Bot) {
     } catch {
       // already deleted
     }
-    await bot.api.sendMessage(chatId, t("admin_main_menu", lang), {
+    await bot.api.sendMessage(chatId, ctx.t("admin_main_menu"), {
       parse_mode: "Markdown",
       reply_markup: keyboard,
     });
@@ -151,14 +149,14 @@ export function registerAdminHandlers(bot: Bot) {
   // Pagination
   bot.callbackQuery(/^admin_page_(\d+)$/, async (ctx) => {
     if (!isAdmin(ctx.from.id)) {
-      await ctx.answerCallbackQuery({ text: t("admin_not_authorized", "en") });
+      await ctx.answerCallbackQuery({ text: ctx.t("admin_not_authorized") });
       return;
     }
     const page = parseInt(ctx.match![1]!, 10);
     await sendAdminList(
       bot,
       ctx.chat!.id,
-      ctx.from.language_code,
+      ctx.t,
       page,
       ctx.msgId,
     );
@@ -168,7 +166,7 @@ export function registerAdminHandlers(bot: Bot) {
   // View individual confirmation detail
   bot.callbackQuery(/^admin_view_(.+)$/, async (ctx) => {
     if (!isAdmin(ctx.from.id)) {
-      await ctx.answerCallbackQuery({ text: t("admin_not_authorized", "en") });
+      await ctx.answerCallbackQuery({ text: ctx.t("admin_not_authorized") });
       return;
     }
 
@@ -182,12 +180,11 @@ export function registerAdminHandlers(bot: Bot) {
     }
 
     const data = confirmDoc.data()!;
-    const lang = ctx.from.language_code;
-    const methodLabel = t(`payment_${data.payment_method}`, "en");
+    const methodLabel = ctx.t(`payment_${data.payment_method}`);
     const statusLabel =
       data.status === "confirmed"
-        ? t("status_confirmed", lang)
-        : t("status_pending", lang);
+        ? ctx.t("status_confirmed")
+        : ctx.t("status_pending");
     const date = new Date(data.created_at).toLocaleDateString("en-GB", {
       day: "2-digit",
       month: "short",
@@ -196,7 +193,7 @@ export function registerAdminHandlers(bot: Bot) {
       minute: "2-digit",
     });
 
-    const text = t("admin_detail", lang, {
+    const text = ctx.t("admin_detail", {
       first_name: data.first_name || "",
       last_name: data.last_name || "",
       username: data.username || "N/A",
@@ -209,10 +206,10 @@ export function registerAdminHandlers(bot: Bot) {
     const keyboard = new InlineKeyboard();
     if (data.status === "pending") {
       keyboard
-        .text(t("btn_admin_confirm", lang), `admin_confirm_${confirmId}`)
+        .text(ctx.t("btn_admin_confirm"), `admin_confirm_${confirmId}`)
         .row();
     }
-    keyboard.text(t("btn_back", lang), "admin_page_0");
+    keyboard.text(ctx.t("btn_back"), "admin_page_0");
 
     await ctx.editMessageText(text, {
       parse_mode: "Markdown",
@@ -224,12 +221,11 @@ export function registerAdminHandlers(bot: Bot) {
   // Album submissions — one file per page with prev/next
   bot.callbackQuery(/^admin_album_(\d+)$/, async (ctx) => {
     if (!isAdmin(ctx.from.id)) {
-      await ctx.answerCallbackQuery({ text: t("admin_not_authorized", "en") });
+      await ctx.answerCallbackQuery({ text: ctx.t("admin_not_authorized") });
       return;
     }
 
     const index = parseInt(ctx.match![1]!, 10);
-    const lang = ctx.from.language_code;
     const chatId = ctx.chat!.id;
 
     // Always delete the previous message (could be text or photo)
@@ -252,9 +248,9 @@ export function registerAdminHandlers(bot: Bot) {
       const keyboard = new InlineKeyboard()
         .text("🔄 Refresh", "admin_album_0")
         .row()
-        .text(t("btn_back", lang), "admin_main");
+        .text(ctx.t("btn_back"), "admin_main");
 
-      await bot.api.sendMessage(chatId, t("admin_album_empty", lang), {
+      await bot.api.sendMessage(chatId, ctx.t("admin_album_empty"), {
         parse_mode: "Markdown",
         reply_markup: keyboard,
       });
@@ -276,14 +272,14 @@ export function registerAdminHandlers(bot: Bot) {
     keyboard.text("📥 Download file", `admin_album_dl_${doc.id}`).row();
 
     if (current > 0) {
-      keyboard.text(t("btn_prev_page", lang), `admin_album_${current - 1}`);
+      keyboard.text(ctx.t("btn_prev_page"), `admin_album_${current - 1}`);
     }
     keyboard.text("🔄", `admin_album_${current}`);
     if (current < total - 1) {
-      keyboard.text(t("btn_next_page", lang), `admin_album_${current + 1}`);
+      keyboard.text(ctx.t("btn_next_page"), `admin_album_${current + 1}`);
     }
     keyboard.row();
-    keyboard.text(t("btn_back", lang), "admin_main");
+    keyboard.text(ctx.t("btn_back"), "admin_main");
 
     const isImage = data.file_type !== "PDF";
 
@@ -296,7 +292,7 @@ export function registerAdminHandlers(bot: Bot) {
         expires: Date.now() + 60 * 60 * 1000,
       });
 
-      const caption = t("admin_album_caption", lang, {
+      const caption = ctx.t("admin_album_caption", {
         index: String(current + 1),
         total: String(total),
         username: data.username || "N/A",
@@ -312,7 +308,7 @@ export function registerAdminHandlers(bot: Bot) {
       });
     } else {
       // PDF — send text message with full details
-      const text = t("admin_album_detail", lang, {
+      const text = ctx.t("admin_album_detail", {
         index: String(current + 1),
         total: String(total),
         first_name: data.first_name || "",
@@ -336,7 +332,7 @@ export function registerAdminHandlers(bot: Bot) {
   // Download / send file to admin
   bot.callbackQuery(/^admin_album_dl_(.+)$/, async (ctx) => {
     if (!isAdmin(ctx.from.id)) {
-      await ctx.answerCallbackQuery({ text: t("admin_not_authorized", "en") });
+      await ctx.answerCallbackQuery({ text: ctx.t("admin_not_authorized") });
       return;
     }
 

@@ -1,15 +1,14 @@
 import type { Bot } from "grammy";
 import { InlineKeyboard } from "grammy";
 import { db } from "../firebase";
-import { t } from "../i18n";
+import { t, type I18nContext } from "../i18n";
 import { paymentOptions, adminIds } from "../config";
 
-export function registerConfirmationHandlers(bot: Bot) {
+export function registerConfirmationHandlers(bot: Bot<I18nContext>) {
   // User clicks "I've sent the payment" on a payment method
   for (const option of paymentOptions) {
     bot.callbackQuery(`confirm_payment_${option.id}`, async (ctx) => {
       const user = ctx.from;
-      const lang = user.language_code;
       const userId = user.id.toString();
       const date = new Date().toISOString();
 
@@ -19,7 +18,7 @@ export function registerConfirmationHandlers(bot: Bot) {
         username: user.username ?? "",
         first_name: user.first_name ?? "",
         last_name: user.last_name ?? "",
-        language_code: lang,
+        language_code: user.language_code,
         payment_method: option.id,
         status: "pending",
         created_at: date,
@@ -58,7 +57,7 @@ export function registerConfirmationHandlers(bot: Bot) {
       }
 
       // Confirm to the user
-      await ctx.editMessageText(t("confirm_request_sent", lang));
+      await ctx.editMessageText(ctx.t("confirm_request_sent"));
       await ctx.answerCallbackQuery();
     });
   }
@@ -95,8 +94,14 @@ export function registerConfirmationHandlers(bot: Bot) {
     });
     await ctx.editMessageText(confirmedText, { parse_mode: "Markdown" });
 
-    // Notify the user that payment is confirmed
-    const userLang = data.language_code;
+    // Notify the user that payment is confirmed — use fresh language from Firestore
+    let userLang = data.language_code;
+    try {
+      const userDoc = await db.collection("users").doc(data.user_id).get();
+      if (userDoc.exists) {
+        userLang = userDoc.data()?.language_code ?? userLang;
+      }
+    } catch {}
     try {
       await bot.api.sendMessage(
         data.user_id,

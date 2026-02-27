@@ -1,10 +1,10 @@
 import type { Bot } from "grammy";
 import { db } from "../firebase";
-import { t } from "../i18n";
+import type { I18nContext } from "../i18n";
 import { adminIds } from "../config";
 import { isInAlbumMode } from "./album";
 
-export function registerMessageHandlers(bot: Bot) {
+export function registerMessageHandlers(bot: Bot<I18nContext>) {
   bot.on("message:text", async (ctx) => {
     // Skip default reply if user is in album upload mode
     if (isInAlbumMode(ctx.from.id)) return;
@@ -12,20 +12,6 @@ export function registerMessageHandlers(bot: Bot) {
     const user = ctx.from;
     const chatId = ctx.chat.id.toString();
     const userId = user.id.toString();
-
-    // Create user record if not exists
-    const userRef = db.collection("users").doc(userId);
-    const userDoc = await userRef.get();
-    if (!userDoc.exists) {
-      await userRef.set({
-        id: userId,
-        username: user.username,
-        first_name: user.first_name,
-        last_name: user.last_name,
-        language_code: user.language_code,
-        created_at: new Date().toISOString(),
-      });
-    }
 
     // Store message under chatId collection
     const chatRef = db.collection("chats").doc(chatId).collection("messages");
@@ -36,7 +22,6 @@ export function registerMessageHandlers(bot: Bot) {
       message_id: ctx.message.message_id,
     });
 
-    const lang = user.language_code;
     console.log(`Received message: ${ctx.message.text}`);
 
     // Forward the message to admins
@@ -52,6 +37,6 @@ export function registerMessageHandlers(bot: Bot) {
       }
     }
 
-    return ctx.reply(t("contact", lang));
+    return ctx.reply(ctx.t("contact"));
   });
 }
