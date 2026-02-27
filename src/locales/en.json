@@ -39,7 +39,7 @@
   "btn_send_album_file": "📤 Send my submission",
   "album_awaiting_file": "Great! Please send your photo, image, or PDF file now. 📎\n\nYou can send multiple files — I'll save each one.\n\nWhen you're done, use /start to go back to the main menu.",
   "album_file_received": "✅ Got it! Your submission has been saved. Thank you! 💛\n\nFeel free to send more files, or use /start to return to the main menu.",
-  "album_file_error": "⚠️ Sorry, I can only accept photos, images, or PDF documents. Please try again.",
+  "album_file_error": "⚠️ Sorry, I can only accept photos, images, or PDF documents for the album. Videos and other file types are not supported. Please try again with a different format.",
   "album_admin_notification": "📖 *New album submission*\n\nFrom: {{first_name}} {{last_name}}\nUsername: @{{username}}\nFile: {{file_type}}\nDate: {{date}}",
   "btn_admin_payments": "💳 Payment Requests",
   "btn_admin_album": "📖 Album Submissions",

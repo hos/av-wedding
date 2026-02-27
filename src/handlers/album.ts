@@ -97,6 +97,12 @@ export function registerAlbumHandlers(bot: Bot<I18nContext>) {
     await ctx.reply(ctx.t("album_file_received"));
   });
 
+  // Reject video uploads with friendly message
+  bot.on("message:video", async (ctx) => {
+    if (!isInAlbumMode(ctx.from.id)) return;
+    await ctx.reply(ctx.t("album_file_error"));
+  });
+
   // Handle document uploads (PDF, images sent as files)
   bot.on("message:document", async (ctx) => {
     if (!isInAlbumMode(ctx.from.id)) return;

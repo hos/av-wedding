@@ -281,10 +281,11 @@ export function registerAdminHandlers(bot: Bot<I18nContext>) {
     keyboard.row();
     keyboard.text(ctx.t("btn_back"), "admin_main");
 
-    const isImage = data.file_type !== "PDF";
+    const isImage = data.file_type === "photo" || data.file_type === "image";
+    const isVideo = data.file_type === "video";
 
-    if (isImage) {
-      // Send photo with short caption + keyboard
+    if (isImage || isVideo) {
+      // Send photo/video with short caption + keyboard
       const bucket = storage.bucket();
       const file = bucket.file(data.storage_path);
       const [url] = await file.getSignedUrl({
@@ -301,11 +302,19 @@ export function registerAdminHandlers(bot: Bot<I18nContext>) {
         caption: data.caption ? `\n💬 ${data.caption}` : "",
       });
 
-      await bot.api.sendPhoto(chatId, url, {
-        caption,
-        parse_mode: "Markdown",
-        reply_markup: keyboard,
-      });
+      if (isVideo) {
+        await bot.api.sendVideo(chatId, url, {
+          caption,
+          parse_mode: "Markdown",
+          reply_markup: keyboard,
+        });
+      } else {
+        await bot.api.sendPhoto(chatId, url, {
+          caption,
+          parse_mode: "Markdown",
+          reply_markup: keyboard,
+        });
+      }
     } else {
       // PDF — send text message with full details
       const text = ctx.t("admin_album_detail", {
@@ -358,6 +367,8 @@ export function registerAdminHandlers(bot: Bot<I18nContext>) {
 
     if (data.file_type === "PDF") {
       await ctx.replyWithDocument(url, { caption });
+    } else if (data.file_type === "video") {
+      await ctx.replyWithVideo(url, { caption });
     } else {
       await ctx.replyWithPhoto(url, { caption });
     }

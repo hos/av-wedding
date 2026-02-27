@@ -38,7 +38,7 @@ export const paymentOptions = [
   {
     id: "crypto",
     values: {
-      trc20_wallet_address: "T0000000000000000000000000000000000",
+      trc20_wallet_address: "TCp2ug6yY2Boze4whQiTmmASJH3VAjWWDw",
     },
   },
 ] as const;
