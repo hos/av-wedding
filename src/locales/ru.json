@@ -10,7 +10,7 @@
   "payment_visa": "💳 Перевод Visa to Visa - EUR",
   "payment_visa_details": "💳 *Перевод на Visa to Visa - EUR*\n\nНомер карты:\n`{{visa_card_number}}`\n\nВладелец карты: {{cardholder_name}}\n\n💡 Вы можете использовать этот номер карты в любом банке поддерживающем прямые переводы между картами Visa.",
   "payment_revolut": "📱 Revolut",
-  "payment_revolut_details": "📱 *Revolut*\n\nПерейдите по ссылке для мгновенного перевода: https://revolut.me/marumara",
+  "payment_revolut_details": "📱 *Revolut*\n\nПерейдите по ссылке для мгновенного перевода: https://revolut.me/marumara?currency=USD",
   "payment_telegram_wallet": "🧮 Telegram Кошелёк",
   "payment_telegram_wallet_details": "🧮 *Перевод через Telegram Кошелёк*\n\nОтправьте напрямую через Telegram Wallet:\n👤 @marumara\n\n💡 Откройте [Telegram Wallet](https://t.me/wallet) → Отправить → найдите @marumara → введите сумму → подтвердите.",
   "payment_crypto": "₿ Крипто (USDT)",

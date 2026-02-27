@@ -10,7 +10,7 @@
   "payment_visa": "💳 Visa to Visa - EUR ",
   "payment_visa_details": "💳 *Visa to Visa Card Transfer - EUR*\n\nCard number:\n`{{visa_card_number}}`\n\nCardholder: {{cardholder_name}}\n\n💡 You can use this card number at any bank that supports direct transfers between Visa cards.",
   "payment_revolut": "📱 Revolut",
-  "payment_revolut_details": "📱 *Revolut*\n\nFollow the link for an instant transfer: https://revolut.me/marumara", 
+  "payment_revolut_details": "📱 *Revolut*\n\nFollow the link for an instant transfer: https://revolut.me/marumara?currency=USD", 
   "payment_telegram_wallet": "🧮 Telegram Wallet",
   "payment_telegram_wallet_details": "🧮 *Telegram Wallet Transfer*\n\nSend directly via Telegram Wallet to:\n👤 @marumara\n\n💡 Open [Telegram Wallet](https://t.me/wallet) → Send → search for @marumara → enter amount → confirm.",
   "payment_crypto": "₿ Crypto (USDT)",
