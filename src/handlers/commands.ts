@@ -14,6 +14,7 @@ export function registerCommands(bot: Bot<I18nContext>) {
   bot.command("start", (ctx) => {
     if (ctx.from) clearAlbumMode(ctx.from.id);
     return ctx.reply(ctx.t("welcome"), {
+      parse_mode: "HTML",
       reply_markup: buildWelcomeKeyboard(ctx.t),
     });
   });

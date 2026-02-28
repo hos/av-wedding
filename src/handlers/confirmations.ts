@@ -47,7 +47,7 @@ export function registerConfirmationHandlers(bot: Bot<I18nContext>) {
               date,
             }),
             {
-              parse_mode: "Markdown",
+              parse_mode: "HTML",
               reply_markup: adminKeyboard,
             },
           );
@@ -92,7 +92,7 @@ export function registerConfirmationHandlers(bot: Bot<I18nContext>) {
       user_id: data.user_id,
       admin_name: admin.first_name ?? admin.username ?? "Admin",
     });
-    await ctx.editMessageText(confirmedText, { parse_mode: "Markdown" });
+    await ctx.editMessageText(confirmedText, { parse_mode: "HTML" });
 
     // Notify the user that payment is confirmed — use fresh language from Firestore
     let userLang = data.language_code;

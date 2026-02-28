@@ -26,12 +26,12 @@ async function sendAdminList(
     const text = t("admin_no_pending");
     if (editMessageId) {
       await bot.api.editMessageText(chatId, editMessageId, text, {
-        parse_mode: "Markdown",
+        parse_mode: "HTML",
         reply_markup: keyboard,
       });
     } else {
       await bot.api.sendMessage(chatId, text, {
-        parse_mode: "Markdown",
+        parse_mode: "HTML",
         reply_markup: keyboard,
       });
     }
@@ -93,12 +93,12 @@ async function sendAdminList(
 
   if (editMessageId) {
     await bot.api.editMessageText(chatId, editMessageId, listText, {
-      parse_mode: "Markdown",
+      parse_mode: "HTML",
       reply_markup: keyboard,
     });
   } else {
     await bot.api.sendMessage(chatId, listText, {
-      parse_mode: "Markdown",
+      parse_mode: "HTML",
       reply_markup: keyboard,
     });
   }
@@ -116,7 +116,7 @@ export function registerAdminHandlers(bot: Bot<I18nContext>) {
       .text(ctx.t("btn_admin_album"), "admin_album_0");
 
     await ctx.reply(ctx.t("admin_main_menu"), {
-      parse_mode: "Markdown",
+      parse_mode: "HTML",
       reply_markup: keyboard,
     });
   });
@@ -140,7 +140,7 @@ export function registerAdminHandlers(bot: Bot<I18nContext>) {
       // already deleted
     }
     await bot.api.sendMessage(chatId, ctx.t("admin_main_menu"), {
-      parse_mode: "Markdown",
+      parse_mode: "HTML",
       reply_markup: keyboard,
     });
     await ctx.answerCallbackQuery();
@@ -212,7 +212,7 @@ export function registerAdminHandlers(bot: Bot<I18nContext>) {
     keyboard.text(ctx.t("btn_back"), "admin_page_0");
 
     await ctx.editMessageText(text, {
-      parse_mode: "Markdown",
+      parse_mode: "HTML",
       reply_markup: keyboard,
     });
     await ctx.answerCallbackQuery();
@@ -251,7 +251,7 @@ export function registerAdminHandlers(bot: Bot<I18nContext>) {
         .text(ctx.t("btn_back"), "admin_main");
 
       await bot.api.sendMessage(chatId, ctx.t("admin_album_empty"), {
-        parse_mode: "Markdown",
+        parse_mode: "HTML",
         reply_markup: keyboard,
       });
       return;
@@ -305,13 +305,13 @@ export function registerAdminHandlers(bot: Bot<I18nContext>) {
       if (isVideo) {
         await bot.api.sendVideo(chatId, url, {
           caption,
-          parse_mode: "Markdown",
+          parse_mode: "HTML",
           reply_markup: keyboard,
         });
       } else {
         await bot.api.sendPhoto(chatId, url, {
           caption,
-          parse_mode: "Markdown",
+          parse_mode: "HTML",
           reply_markup: keyboard,
         });
       }
@@ -332,7 +332,7 @@ export function registerAdminHandlers(bot: Bot<I18nContext>) {
       });
 
       await bot.api.sendMessage(chatId, text, {
-        parse_mode: "Markdown",
+        parse_mode: "HTML",
         reply_markup: keyboard,
       });
     }

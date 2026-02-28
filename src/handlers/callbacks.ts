@@ -34,7 +34,7 @@ export function registerCallbackHandlers(bot: Bot<I18nContext>) {
         ctx.t(`payment_${option.id}_details`, option.values as Record<string, string>),
         {
           reply_markup: keyboard,
-          parse_mode: "Markdown",
+          parse_mode: "HTML",
         },
       );
       await ctx.answerCallbackQuery();
@@ -44,6 +44,7 @@ export function registerCallbackHandlers(bot: Bot<I18nContext>) {
   // Back to welcome
   bot.callbackQuery("back_to_welcome", async (ctx) => {
     await ctx.editMessageText(ctx.t("welcome"), {
+      parse_mode: "HTML",
       reply_markup: buildWelcomeKeyboard(ctx.t),
     });
     await ctx.answerCallbackQuery();

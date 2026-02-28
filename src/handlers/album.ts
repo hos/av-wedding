@@ -27,7 +27,7 @@ export function registerAlbumHandlers(bot: Bot<I18nContext>) {
 
     await ctx.editMessageText(ctx.t("album_intro"), {
       reply_markup: keyboard,
-      parse_mode: "Markdown",
+      parse_mode: "HTML",
     });
     await ctx.answerCallbackQuery();
   });
@@ -41,7 +41,7 @@ export function registerAlbumHandlers(bot: Bot<I18nContext>) {
 
     await ctx.editMessageText(ctx.t("album_guidelines"), {
       reply_markup: keyboard,
-      parse_mode: "Markdown",
+      parse_mode: "HTML",
     });
     await ctx.answerCallbackQuery();
   });
@@ -175,7 +175,7 @@ async function notifyAdmins(
           file_type: fileType,
           date,
         }),
-        { parse_mode: "Markdown" },
+        { parse_mode: "HTML" },
       );
     } catch (err) {
       console.error(`Failed to notify admin ${adminId} about album:`, err);

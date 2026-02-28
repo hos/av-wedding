@@ -26,11 +26,11 @@ export function registerMessageHandlers(bot: Bot<I18nContext>) {
 
     // Forward the message to admins
     const name = [user.first_name, user.last_name].filter(Boolean).join(" ");
-    const adminText = `💬 *New message*\n\nFrom: ${name}\nUsername: @${user.username || "N/A"}\nUser ID: \`${userId}\`\n\n"${ctx.message.text}"`;
+    const adminText = `💬 <b>New message</b>\n\nFrom: ${name}\nUsername: @${user.username || "N/A"}\nUser ID: <code>${userId}</code>\n\n"${ctx.message.text}"`;
     for (const adminId of adminIds) {
       try {
         await bot.api.sendMessage(adminId, adminText, {
-          parse_mode: "Markdown",
+          parse_mode: "HTML",
         });
       } catch (err) {
         console.error(`Failed to forward message to admin ${adminId}:`, err);
